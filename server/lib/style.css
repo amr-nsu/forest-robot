@@ -1,0 +1,26 @@
+body {
+    background-color: #222222;
+    color:#ffffff;
+}
+
+.inverse {
+    transform: scale(-1, -1);
+}
+
+
+#camera img {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 480pt;
+    height: 360pt;
+}
+
+#camera #hud {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 640pt;
+    height: 480pt;
+}
+

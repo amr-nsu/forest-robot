@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>rotob1</title>
+    <script src="lib/main.js">
+    </script>
+    <link  rel="stylesheet" href="lib/style.css">
+</head>
+<body onload="main();">
+    <table width=100%>
+    <tr width=50% height=100%>
+    <td width=50% height=100%>
+    <div id="camera">
+        <img src="http://10.42.0.1:8000/stream.mjpg" width="640" height="480" class="inverse"/>
+        <div id="hud">
+            <object id="hud_svg" data="lib/hud.svg" type="image/svg+xml">
+            </object>
+        </div>
+    </div>
+    </td>
+    <td width=50% height=100%>
+    <div>БАЗА ДАННЫХ</div>
+    <div>---------------------------------------------------------------</div>
+    <div id="database"></div>
+    </td>
+    </tr>
+    </table>
+</body>
+</html>
+
