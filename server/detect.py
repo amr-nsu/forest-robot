@@ -11,7 +11,7 @@ THRESHOLD = 30
 CONTOUR_AREA = 2000
 
 
-def detect_motion(frame, gray_frame):
+def motion(frame, gray_frame):
     motion = False
     global static_frame
     global last_motion_time
@@ -39,8 +39,8 @@ def detect_motion(frame, gray_frame):
         if cv2.contourArea(contour) < CONTOUR_AREA:
             continue
         motion = True
-        (x, y, w, h) = cv2.boundingRect(contour)
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # (x, y, w, h) = cv2.boundingRect(contour)
+        # cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
     global motion_state
     if motion_state != motion:
@@ -48,6 +48,24 @@ def detect_motion(frame, gray_frame):
         if motion:
             print(strftime('%Y-%m-%d %H:%M:%S', gmtime()), 'motion detect')
             last_motion_time = time.time()
+    return motion
+
+
+def animal(frame, frame_gray):
+    t_start = time.time()
+    
+    cascadePath="haarcascade_frontalface_default.xml"  
+    cascade = cv2.CascadeClassifier(cascadePath)  # FIXME: call once
+    animals = cascade.detectMultiScale(frame_gray, 1.3 , 1)
+    #print(animals)
+                       
+    cmd = None                   
+    for (x, y, w, h) in animals:                  
+        #cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 2)
+        pass
+   
+    print('animal detect time: ', time.time() - t_start);
+    return cmd  
 
 
 def main():
