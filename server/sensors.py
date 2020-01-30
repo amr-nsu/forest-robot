@@ -1,5 +1,6 @@
 import time
 import pigpio
+from lib.bmp280 import BMP280
 
 pi = pigpio.pi()
 
@@ -22,7 +23,28 @@ def motion():
     return False
 
 
+bmp280 = BMP280()
+
+global pressure_init
+pressure_init_value = 0
+
+
+def init():
+    pressure_init_value, _ = pressure_and_temperature()
+
+
+def pressure_and_temperature():
+    return bmp280.getReading()    
+
+
+def altitude_baro():
+    global pressure_init
+    pressure, _ = pressure_and_temperature()
+    return pressure - pressure_init_value
+
+
 if __name__ == '__main__':
     while True:
+        print(pressure_and_temperature())
         print(pi.read(MOTION_GPIO))
-        time.sleep(0.2)
+        time.sleep(1)

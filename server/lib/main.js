@@ -16,7 +16,7 @@ function request(cmd, elem='') {
     req.open('GET', cmd, true);
     req.onload = function() {
         if (req.status == 200) {
-            if (elem == 'course') {
+            if (elem == 'course' || elem == 'altitude') {
                 setSensorValue(req.responseText, elem);
             }
             else if (elem != '') {
@@ -39,7 +39,14 @@ function courseTimeoutCallback() {
     setTimeout('courseTimeoutCallback();', 1000);
 }
 
+function altitudeBaroTimeoutCallback() {
+    const cmd = robot1 + '/cmd=b';
+    request(cmd, 'altitude');
+    setTimeout('altitudeBaroTimeoutCallback();', 2000);
+}
+
 function main() {
     courseTimeoutCallback();
     databaseTimeoutCallback();
+    altitudeBaroTimeoutCallback();
 }

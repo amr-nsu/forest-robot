@@ -154,13 +154,16 @@ class HTTPHandler(server.BaseHTTPRequestHandler):
                 self.wfile.write(bytes(database.read_last(13), 'utf-8'))
             elif cmd == 'c':
                 self.wfile.write(bytes(str(-motor.camera_angle), 'utf-8'))          
-            
+            elif cmd == 'b':
+                self.wfile.write(bytes("%.3f" % sensors.altitude_baro(), 'utf-8'))
 
 if __name__ == '__main__':   
 
     PORT = 8000
     print("Server started at 10.42.0.1:%s" % PORT)
+
     database.init_demo()
+    sensors.init()
 
     class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
         pass
