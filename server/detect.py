@@ -6,7 +6,7 @@ static_frame = None
 last_motion_time = None
 motion_state = False
 
-MOTION_TIMEOUT = 30  # s
+MOTION_TIMEOUT = 5  # s
 THRESHOLD = 30
 CONTOUR_AREA = 2000
 
@@ -51,39 +51,36 @@ def motion(frame, gray_frame):
     return motion
 
 
-def animal(frame, frame_gray):
-    t_start = time.time()
-    
-    cascadePath="haarcascade_frontalface_default.xml"  
-    cascade = cv2.CascadeClassifier(cascadePath)  # FIXME: call once
-    animals = cascade.detectMultiScale(frame_gray, 1.3 , 1)
-    #print(animals)
-                       
-    cmd = None                   
-    for (x, y, w, h) in animals:                  
-        #cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 2)
-        pass
-   
-    print('animal detect time: ', time.time() - t_start);
-    return cmd  
+cascadeWildCats = cv2.CascadeClassifier("lib/haarcascade_frontalcatface.xml")
+cascadeMonkeys = cv2.CascadeClassifier("lib/haarcascade_frontalface_default.xml")
 
+
+def animal(frame, frame_gray):
+    wildcats = cascadeWildCats.detectMultiScale(frame_gray, 1.5, 1)
+    if len(wildcats) > 0:
+        return 'wildcat', wildcats[0]
+    monkeys = cascadeMonkeys.detectMultiScale(frame_gray, 1.5, 1)
+    if len(monkeys) > 0:
+        return 'monkey', monkeys[0]
+
+    # for (x, y, w, h) in animals:                  
+    #     cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 2)
+    return None, None
+    
 
 def main():
     video = cv2.VideoCapture(0)
     while True:
         _, frame = video.read()
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # gray = cv2.GaussianBlur(gray, (11, 11), 0)
 
-        detect_motion(frame, gray)
+        motion(frame, frame_gray)
 
         cv2.imshow("Color", frame)
 
         if cv2.waitKey(1) == ord('q'):
             break
-
-    video.release()
-    cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
