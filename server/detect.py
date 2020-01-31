@@ -62,7 +62,6 @@ def animal(frame, frame_gray, draw=False):
         return 'wildcat', wildcats[0]
     monkeys = cascadeMonkeys.detectMultiScale(frame_gray, 1.5, 1)
     if len(monkeys) > 0:
-        print(len(monkeys))
         return 'monkey', monkeys[0]
     return None, None
 
@@ -74,11 +73,11 @@ def animal_info(frame, title, position):
 
 
 def main():
-    video = cv2.VideoCapture(0)
+    video = cv2.VideoCapture(1)
     while True:
         _, frame = video.read()
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # gray = cv2.GaussianBlur(gray, (11, 11), 0)
+        frame_gray = cv2.GaussianBlur(frame_gray, (21, 21), 0)
 
         motion(frame, frame_gray, draw=True)
         t, a = animal(frame, frame_gray, draw=True)
