@@ -36,13 +36,13 @@ function databaseTimeoutCallback() {
 function courseTimeoutCallback() {
     const cmd = robot1 + '/cmd=c';
     request(cmd, 'course');
-    setTimeout('courseTimeoutCallback();', 1000);
+    setTimeout('courseTimeoutCallback();', 500);
 }
 
 function altitudeBaroTimeoutCallback() {
     const cmd = robot1 + '/cmd=b';
     request(cmd, 'altitude');
-    setTimeout('altitudeBaroTimeoutCallback();', 2000);
+    setTimeout('altitudeBaroTimeoutCallback();', 500);
 }
 
 function main() {

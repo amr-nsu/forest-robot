@@ -48,15 +48,18 @@ class StreamingOutput(object):
 
         if self.status == 'camera_scan':
             if not motor.camera_scan():
-                motor.camera_scan_stop()
+                motor.camera_scan_stop(return_to_center=True)
                 self.status = 'detect_motion'       
         
-        if self.status in ('detect_animal', 'camera_scan'):                   
+        if self.status in ('detect_animal', 'camera_scan'):   
+            # Обнаружение животных            
             animal, position = detect.animal(frame, frame_gray)                
             if animal == 'wildcat':
                 database.write('Обнаружено животное', 'лесной кот')
             elif animal == 'monkey':
                 database.write('Обнаружено животное', 'обезьяна')
+            
+            # Переключение на режим обнаружения движения    
             if self.status == 'detect_animal':
                 if animal is not None or time.time() - self.status_time > 5:
                     self.status = 'detect_motion'
@@ -155,7 +158,7 @@ class HTTPHandler(server.BaseHTTPRequestHandler):
             elif cmd == 'c':
                 self.wfile.write(bytes(str(-motor.camera_angle), 'utf-8'))          
             elif cmd == 'b':
-                self.wfile.write(bytes("%.3f" % sensors.altitude_baro(), 'utf-8'))
+                self.wfile.write(bytes("%.1fM" % sensors.altitude_baro(), 'utf-8'))
 
 if __name__ == '__main__':   
 

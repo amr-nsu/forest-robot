@@ -49,11 +49,12 @@ def camera_scan():
     return True
         
 
-def camera_scan_stop():
+def camera_scan_stop(return_to_center=False):
     global camera_angle
     global scan_status
-    # move_servo(c1_gpio, camera_angle, 0)
-    # camera_angle = 0
+    if return_to_center:
+        move_servo(c1_gpio, camera_angle, 0)
+        camera_angle = 0
     scan_status = False
 
 

@@ -8,7 +8,7 @@ global last_motion_time
 last_motion_time = 0
 
 MOTION_GPIO = 18
-MOTION_TIMEOUT = 10  # s
+MOTION_TIMEOUT = 30  # s
 
 pi.set_mode(MOTION_GPIO, pigpio.INPUT)
 
@@ -26,11 +26,12 @@ def motion():
 bmp280 = BMP280()
 
 global pressure_init
-pressure_init_value = 0
+pressure_init = 0
 
 
 def init():
-    pressure_init_value, _ = pressure_and_temperature()
+    global pressure_init
+    pressure_init, _ = pressure_and_temperature()
 
 
 def pressure_and_temperature():
@@ -39,8 +40,11 @@ def pressure_and_temperature():
 
 def altitude_baro():
     global pressure_init
-    pressure, _ = pressure_and_temperature()
-    return pressure - pressure_init_value
+    pressure, temperature = pressure_and_temperature()
+    R = 29.27   # Газовая постоянная, м/град
+    TR = 0.005  # Температурный градиент, град/м
+    T = 273 + temperature  # Абсолютная температура
+    return (1 - (pressure / pressure_init)**(TR * R)) * T / TR
 
 
 if __name__ == '__main__':
