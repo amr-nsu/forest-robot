@@ -11,7 +11,7 @@ THRESHOLD = 30
 CONTOUR_AREA = 2000
 
 
-def motion(frame, gray_frame):
+def motion(frame, gray_frame, draw=False):
     motion = False
     global static_frame
     global last_motion_time
@@ -39,8 +39,9 @@ def motion(frame, gray_frame):
         if cv2.contourArea(contour) < CONTOUR_AREA:
             continue
         motion = True
-        # (x, y, w, h) = cv2.boundingRect(contour)
-        # cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        if draw:
+            (x, y, w, h) = cv2.boundingRect(contour)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 255), 2)
 
     global motion_state
     if motion_state != motion:
@@ -55,18 +56,22 @@ cascadeWildCats = cv2.CascadeClassifier("lib/haarcascade_frontalcatface.xml")
 cascadeMonkeys = cv2.CascadeClassifier("lib/haarcascade_frontalface_default.xml")
 
 
-def animal(frame, frame_gray):
+def animal(frame, frame_gray, draw=False):
     wildcats = cascadeWildCats.detectMultiScale(frame_gray, 1.5, 1)
     if len(wildcats) > 0:
         return 'wildcat', wildcats[0]
     monkeys = cascadeMonkeys.detectMultiScale(frame_gray, 1.5, 1)
     if len(monkeys) > 0:
+        print(len(monkeys))
         return 'monkey', monkeys[0]
-
-    # for (x, y, w, h) in animals:                  
-    #     cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 2)
     return None, None
-    
+
+
+def animal_info(frame, title, position):
+    (x, y, w, h) = position
+    cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    cv2.putText(frame, title, (x, y - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0))
+
 
 def main():
     video = cv2.VideoCapture(0)
@@ -75,7 +80,10 @@ def main():
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # gray = cv2.GaussianBlur(gray, (11, 11), 0)
 
-        motion(frame, frame_gray)
+        motion(frame, frame_gray, draw=True)
+        t, a = animal(frame, frame_gray, draw=True)
+        if t is not None:
+            animal_info(frame, t, a)
 
         cv2.imshow("Color", frame)
 
