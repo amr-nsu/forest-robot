@@ -13,13 +13,13 @@ b4_gpio = 19  # body4
 w2_gpio = 26  # claw2
 
 def move_servo(servo_gpio, from_pwm, to_pwm):
-    if to_pwm > from_pwm:
-        step = 50
+    if to_pwm > from_pwm:    
+        step = 10
     else:
-        step = -50
+        step = -10
     for pwm in range(from_pwm, to_pwm, step):
         pi.set_servo_pulsewidth(servo_gpio, pwm)
-        time.sleep(0.1)
+        time.sleep(0.01)
         
 def stop():
     pi.set_servo_pulsewidth(c1_gpio, 0)
@@ -34,34 +34,49 @@ def stop():
 def init():
 #    pi.set_servo_pulsewidth(c1_gpio, 1500)
     pi.set_servo_pulsewidth(w1_gpio, 1500)
-    pi.set_servo_pulsewidth(b1_gpio, 900)
-#    pi.set_servo_pulsewidth(b2_gpio, 1100)
+    pi.set_servo_pulsewidth(b1_gpio, 1500)
+    pi.set_servo_pulsewidth(b2_gpio, 1500)
 #    pi.set_servo_pulsewidth(b3_gpio, 1100)
     pi.set_servo_pulsewidth(b4_gpio, 1500)
-    pi.set_servo_pulsewidth(w2_gpio, 2000)
+    pi.set_servo_pulsewidth(w2_gpio, 1500)
     
-def hold():
-    move_servo(w1_gpio, 1500, 2000)  # hold 1
-
+def hold1(param=True):
+    if param:
+        move_servo(w1_gpio, 1500, 1800)
+    else:
+        move_servo(w1_gpio, 1800, 1500)
+    
+def hold2(param=True):
+    if param:
+        move_servo(w2_gpio, 1500, 1800)
+    else:
+        move_servo(w2_gpio, 1800, 1500)
+        
 def step():
-    for v in range(0, 400, 100):
-        pi.set_servo_pulsewidth(b1_gpio, 900 - v)
+    for v in range(0, 200, 1):
+        pi.set_servo_pulsewidth(b1_gpio, 1500 - v/4)
+        pi.set_servo_pulsewidth(b2_gpio, 1500 + v)
         pi.set_servo_pulsewidth(b4_gpio, 1500 + v)
-        time.sleep(0.25)
+        time.sleep(0.003)
 
-    move_servo(w2_gpio, 2000, 1500)  # hold 2
-    move_servo(w1_gpio, 2000, 1500)  # unhold 1
+def step_back():
+    for v in range(200, 0, -1):
+        pi.set_servo_pulsewidth(b1_gpio, 1500 - v/4)
+        pi.set_servo_pulsewidth(b2_gpio, 1500 + v)
+        pi.set_servo_pulsewidth(b4_gpio, 1500 + v)
+        time.sleep(0.003)
+   
+init()
 
-    
+time.sleep(3)
 
-#init()
-#time.sleep(3)
-
-hold()
-time.sleep(1)
-
-step()
-time.sleep(2)
+for _ in range(5):
+    hold1()
+    hold2(False)
+    step()
+    hold2()
+    hold1(False)
+    step_back()
 
 stop()
 

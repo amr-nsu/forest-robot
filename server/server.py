@@ -153,6 +153,10 @@ class HTTPHandler(server.BaseHTTPRequestHandler):
                 motor.rotate_camera(15)
             elif cmd == 'r':
                 motor.rotate_camera(-15)
+            elif cmd == 'w':
+                motor.move_forward(1)
+            elif cmd == 's':
+                motor.move_backward(1)
             elif cmd == 'd':
                 self.wfile.write(bytes(database.read_last(13), 'utf-8'))
             elif cmd == 'c':

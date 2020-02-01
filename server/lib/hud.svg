@@ -164,7 +164,7 @@
        onclick="window.parent.request('/cmd=r')" />
     <g
        id="g903"
-       onclick="window.parent.request('/cmd=f')">
+       onclick="window.parent.request('/cmd=w')">
       <rect
          onclick="window.parent.request('/cmd=u')"
          y="269.48337"
@@ -182,7 +182,7 @@
     </g>
     <g
        id="g913"
-       onclick="window.parent.request('/cmd=b')">
+       onclick="window.parent.request('/cmd=s')">
       <rect
          onclick="window.parent.request('/cmd=d')"
          transform="scale(1,-1)"
