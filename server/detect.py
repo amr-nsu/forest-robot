@@ -11,7 +11,7 @@ THRESHOLD = 30
 CONTOUR_AREA = 2000
 
 
-def motion(frame, gray_frame):
+def motion(frame, gray_frame, draw=False):
     motion = False
     global static_frame
     global last_motion_time
@@ -31,16 +31,17 @@ def motion(frame, gray_frame):
     _, contours, _ = cv2.findContours(thresh_frame.copy(),
                                       cv2.RETR_EXTERNAL,
                                       cv2.CHAIN_APPROX_SIMPLE)
-    # cv2.imshow("Gray", gray_frame)
-    # cv2.imshow("Diff", diff_frame)
-    # cv2.imshow("Threshold", thresh_frame)
+    # cv2.imshow('Gray', gray_frame)
+    # cv2.imshow('Diff', diff_frame)
+    # cv2.imshow('Threshold', thresh_frame)
 
     for contour in contours:
         if cv2.contourArea(contour) < CONTOUR_AREA:
             continue
         motion = True
-        # (x, y, w, h) = cv2.boundingRect(contour)
-        # cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        if draw:
+            (x, y, w, h) = cv2.boundingRect(contour)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 255), 2)
 
     global motion_state
     if motion_state != motion:
@@ -51,33 +52,40 @@ def motion(frame, gray_frame):
     return motion
 
 
-cascadeWildCats = cv2.CascadeClassifier("lib/haarcascade_frontalcatface.xml")
-cascadeMonkeys = cv2.CascadeClassifier("lib/haarcascade_frontalface_default.xml")
+cascadeWildCats = cv2.CascadeClassifier('lib/haarcascade_frontalcatface.xml')
+cascadeMonkeys = cv2.CascadeClassifier('lib/haarcascade_frontalface_default.xml')
 
 
-def animal(frame, frame_gray):
-    wildcats = cascadeWildCats.detectMultiScale(frame_gray, 1.5, 1)
-    if len(wildcats) > 0:
-        return 'wildcat', wildcats[0]
-    monkeys = cascadeMonkeys.detectMultiScale(frame_gray, 1.5, 1)
-    if len(monkeys) > 0:
-        return 'monkey', monkeys[0]
+def animal(frame, frame_gray, draw=False):
 
-    # for (x, y, w, h) in animals:                  
-    #     cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 2)
+    def draw_detect(caption, position, draw):
+        if draw:
+            x, y, w, h = position
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+            cv2.putText(frame, caption, (x, y - 8), cv2.FONT_HERSHEY_COMPLEX, 0.75, (0, 255, 0))
+
+    animals = cascadeWildCats.detectMultiScale(frame_gray, 1.5, 1)
+    if len(animals) > 0:
+        draw_detect('wildcat', animals[0], draw)
+        return 'wildcat', animals[0]
+    animals = cascadeMonkeys.detectMultiScale(frame_gray, 1.5, 1)
+    if len(animals) > 0:
+        draw_detect('monkey', animals[0], draw)
+        return 'monkey', animals[0]
     return None, None
-    
+
 
 def main():
     video = cv2.VideoCapture(0)
     while True:
         _, frame = video.read()
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # gray = cv2.GaussianBlur(gray, (11, 11), 0)
+        frame_gray = cv2.GaussianBlur(frame_gray, (21, 21), 0)
 
-        motion(frame, frame_gray)
+        motion(frame, frame_gray, draw=True)
+        animal(frame, frame_gray, draw=True)
 
-        cv2.imshow("Color", frame)
+        cv2.imshow('Robot', frame)
 
         if cv2.waitKey(1) == ord('q'):
             break
