@@ -35,7 +35,7 @@ def init():
 
 
 def pressure_and_temperature():
-    return bmp280.getReading()    
+    return bmp280.getReading()
 
 
 def altitude_baro():
