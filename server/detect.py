@@ -58,20 +58,23 @@ cascadeMonkeys = cv2.CascadeClassifier('lib/haarcascade_frontalface_default.xml'
 
 def animal(frame, frame_gray, draw=False):
 
+    COLOR = (0, 255, 0)
+    MIN_SIZE = (96, 96)
+
     def draw_detect(caption, position, draw):
         if draw:
             x, y, w, h = position
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+            cv2.rectangle(frame, (x, y), (x+w, y+h), COLOR, 2)
             cv2.putText(frame, caption, (x, y - 8),
-                        cv2.FONT_HERSHEY_COMPLEX, 0.75, (0, 255, 0))
+                        cv2.FONT_HERSHEY_COMPLEX, 0.75, COLOR)
 
-    animals = cascadeWildCats.detectMultiScale(frame_gray, 1.5, 1,
-                                               minSize=(96, 96))
+    animals = cascadeWildCats.detectMultiScale(frame_gray, 1.25, 1,
+                                               minSize=MIN_SIZE)
     if len(animals) > 0:
         draw_detect('wildcat', animals[0], draw)
         return 'wildcat', animals[0]
-    animals = cascadeMonkeys.detectMultiScale(frame_gray, 1.5, 1,
-                                              minSize=(96, 96))
+    animals = cascadeMonkeys.detectMultiScale(frame_gray, 1.25, 1,
+                                              minSize=MIN_SIZE)
     if len(animals) > 0:
         draw_detect('monkey', animals[0], draw)
         return 'monkey', animals[0]
@@ -79,6 +82,9 @@ def animal(frame, frame_gray, draw=False):
 
 
 def main():
+    WINDOW_TITLE = 'Robot-1'
+    cv2.namedWindow(WINDOW_TITLE, cv2.WINDOW_GUI_NORMAL)
+    cv2.resizeWindow(WINDOW_TITLE, 1024, 768)
     video = cv2.VideoCapture(0)
     while True:
         _, frame = video.read()
@@ -88,7 +94,7 @@ def main():
         motion(frame, frame_gray, draw=True)
         animal(frame, frame_gray, draw=True)
 
-        cv2.imshow('Robot', frame)
+        cv2.imshow(WINDOW_TITLE, frame)
 
         if cv2.waitKey(1) == ord('q'):
             break
